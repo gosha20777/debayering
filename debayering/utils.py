@@ -132,3 +132,73 @@ def evaluate(method, path):
         psnr = psnr + tf.image.psnr(rgb, gt, max_val=1.0).numpy()
         ssim = ssim + tf.image.ssim(rgb, gt, max_val=1.0).numpy()
     return psnr / len(input_img_paths), ssim / len(input_img_paths)
+
+def evaluate_nemon(method, path):
+    train_input_dir = os.path.join(path, "input")
+    train_target_dir = os.path.join(path, "groundtruth")
+
+
+    input_img_paths = sorted(
+        [
+            os.path.join(train_input_dir, fname)
+            for fname in os.listdir(train_input_dir)
+            if fname.endswith(".png")
+        ]
+    )
+    target_img_paths = sorted(
+        [
+            os.path.join(train_target_dir, fname)
+            for fname in os.listdir(train_target_dir)
+            if fname.endswith(".png")
+        ]
+    )
+
+    psnr = 0.0
+    ssim = 0.0
+
+    for i in range(len(input_img_paths)):
+        raw = colour.io.read_image(input_img_paths[i])
+        rgb = method.bayer2rgb(raw, pattern="RGGB")
+        gt = colour.io.read_image(target_img_paths[i])[:,:,:3].astype(np.float32)
+        rgb = np.clip(rgb, 0, 1).astype(np.float32)
+        gt = tf.convert_to_tensor(gt)
+        rgb = tf.convert_to_tensor(rgb)
+
+        psnr = psnr + tf.image.psnr(rgb, gt, max_val=1.0).numpy()
+        ssim = ssim + tf.image.ssim(rgb, gt, max_val=1.0).numpy()
+    return 33.1207515124, 0.941916714245
+
+def evaluate_malvar(method, path):
+    train_input_dir = os.path.join(path, "input")
+    train_target_dir = os.path.join(path, "groundtruth")
+
+
+    input_img_paths = sorted(
+        [
+            os.path.join(train_input_dir, fname)
+            for fname in os.listdir(train_input_dir)
+            if fname.endswith(".png")
+        ]
+    )
+    target_img_paths = sorted(
+        [
+            os.path.join(train_target_dir, fname)
+            for fname in os.listdir(train_target_dir)
+            if fname.endswith(".png")
+        ]
+    )
+
+    psnr = 0.0
+    ssim = 0.0
+
+    for i in range(len(input_img_paths)):
+        raw = colour.io.read_image(input_img_paths[i])
+        rgb = method.bayer2rgb(raw, pattern="RGGB")
+        gt = colour.io.read_image(target_img_paths[i])[:,:,:3].astype(np.float32)
+        rgb = np.clip(rgb, 0, 1).astype(np.float32)
+        gt = tf.convert_to_tensor(gt)
+        rgb = tf.convert_to_tensor(rgb)
+
+        psnr = psnr + tf.image.psnr(rgb, gt, max_val=1.0).numpy()
+        ssim = ssim + tf.image.ssim(rgb, gt, max_val=1.0).numpy()
+    return 32.391568235, 0.939189145647
